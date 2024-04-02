@@ -41,7 +41,9 @@ const App: React.FC = () => {
     gen_4: 107,
     gen_5: 156,
     gen_6: 72,
-    gen_7: 88 
+    gen_7: 88,
+    gen_8: 89,
+    gen_9: 89,
   };
   const generations: { [key: string]: number } = {
     gen_1: 0,
@@ -50,7 +52,9 @@ const App: React.FC = () => {
     gen_4: 386,
     gen_5: 493,
     gen_6: 649,
-    gen_7: 721
+    gen_7: 721,
+    gen_8: 809,
+    gen_9: 898,
   };
 
   useEffect(() => {

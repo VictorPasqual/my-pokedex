@@ -15,6 +15,8 @@ const SelectGeneration: React.FC<SelectGenerationProps> = ({ onSelectChange }) =
         <option value="gen_5">5th Gen</option>
         <option value="gen_6">6th Gen</option>
         <option value="gen_7">7th Gen</option>
+        <option value="gen_8">8th Gen</option>
+        <option value="gen_9">9th Gen</option>
       </select>
     </div>
   );
