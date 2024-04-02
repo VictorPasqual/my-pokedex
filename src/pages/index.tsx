@@ -6,6 +6,7 @@ import PokemonPopup from '../components/PokemonPopup';
 import { Pokemon } from '../types/pokedex';
 import logo from '../../public/assets/img/pokemon-logo.png';
 import Image from 'next/image';
+import SelectType from '../components/SelectType';
 
 interface PokemonAPI {
   getPokemonDetail: (pokemon: any) => Promise<Pokemon>;
@@ -31,6 +32,7 @@ const App: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedType, setSelectedType] = useState<string>('');
   const limit = 10;
   const maxRecords: { [key: string]: number } = {
     gen_1: 151,
@@ -53,7 +55,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     loadPokemonItems(offset, limit);
-  }, [offset, selectGen]);
+  }, [offset, selectGen, selectedType]);
 
   const pokeApi: PokemonAPI = {
     getPokemonDetail: (pokemon: any) => {
@@ -84,17 +86,39 @@ const App: React.FC = () => {
     },
   };
 
-  const loadPokemonItems = (offset: number, limit: number): Promise<void> => {
+  const loadPokemonItems = (offset: number, limit: number) => {
     setIsLoading(true);
-    return pokeApi.getPokemons(offset, limit)
-      .then((pokemons: Pokemon[]) => {
-        setPokemons((prevPokemons) => [...prevPokemons, ...pokemons]);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching pokemons:', error);
-        setIsLoading(false);
-      });
+    const genStart = generations[selectGen];
+    const genEnd = generations[selectGen] + maxRecords[selectGen];
+    
+    if (selectedType === "") {
+        pokeApi.getPokemons(offset, limit)
+        .then((pokemons: Pokemon[]) => {
+          setPokemons((prevPokemons) => [...prevPokemons, ...pokemons]);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching pokemons:', error);
+          setIsLoading(false);
+        });
+    } else {
+      const pokemonPromises: Promise<Pokemon[]>[] = [];
+      for (let i = genStart; i < genEnd; i += limit) {
+        pokemonPromises.push(pokeApi.getPokemons(i, limit));
+      }
+  
+      Promise.all(pokemonPromises)
+        .then((results: Pokemon[][]) => {
+          const allPokemons = results.flat();
+          const filteredPokemons = selectedType ? allPokemons.filter(pokemon => pokemon.types.includes(selectedType)) : allPokemons;
+          setPokemons(filteredPokemons);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching pokemons:', error);
+          setIsLoading(false);
+        });
+    }
   };
 
   const handleLoadMore = () => {
@@ -112,6 +136,15 @@ const App: React.FC = () => {
     setHasMore(true);
   };
 
+  const handleSelectTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedType = event.target.value;
+    setSelectedType(selectedType);
+    setPokemons([]);
+    setCountRecords(0);
+    setOffset(0);
+    setHasMore(true);
+  };
+
   const handlePokemonClick = (pokemon: Pokemon) => {
     setSelectedPokemon(pokemon);
     setIsPopupOpen(true);
@@ -125,7 +158,10 @@ const App: React.FC = () => {
     <div className="container" style={{ backgroundColor: '#ee1515', minHeight: '100vh', textAlign: 'center' }}>
       <Image src={logo} alt="Pokedex Logo" className="logo-img" />   
       <div className="main-content">
-        <SelectGeneration onSelectChange={handleSelectGenChange} />
+        <div className="filters-container">
+          <SelectGeneration onSelectChange={handleSelectGenChange} />
+          <SelectType onSelectChange={handleSelectTypeChange} />
+        </div>
         <PokemonList pokemons={pokemons} onItemClick={handlePokemonClick} />
         <LoadMoreButton onClick={handleLoadMore} isLoading={isLoading} hasMore={hasMore}/>
         {isPopupOpen && selectedPokemon && (

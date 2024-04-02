@@ -20,7 +20,6 @@ const PokemonPopup: React.FC<Props> = ({ pokemon, onClose }) => {
       <div className={`popup-content ${pokemon.type}`}>
         <button className="close-btn" onClick={onClose}>X</button>
         <div className="pokemon-info">
-         
           <div className="pokemon-details">
             <p><strong>Number:</strong> #{pokemon.number}</p>
             <p><strong>Type:</strong> {pokemon.type}</p>
