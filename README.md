@@ -8,7 +8,7 @@ Visite o Site
 
 Para começar sua jornada na Pokédex, basta clicar no link abaixo:
 
-Pokédex - Gotta Catch 'Em All!
+[Pokédex - Gotta Catch 'Em All!](https://mypokex.netlify.app/)
 
 Funcionalidades
 
