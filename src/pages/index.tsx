@@ -80,7 +80,7 @@ const App: React.FC = () => {
           return pokemonDetail;
         });
     },
-    getPokemons: (offset: number = 0, limit: number = 10) => {
+    getPokemons: (offset: number = 0, limit: number = 10): Promise<any> => {
       const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
       return fetch(url)
         .then((response) => response.json())
